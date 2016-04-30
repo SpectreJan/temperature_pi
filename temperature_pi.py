@@ -1,4 +1,19 @@
-# -*- coding: utf8 -*-  
+# -*- coding: utf8 -*-
+#  Copyright (C) {2016}  {Jan Kraemer}
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+###############################################################################
 import re, os, urllib2
 import time
 import RPi.GPIO as gpio
@@ -9,9 +24,9 @@ parser.add_argument("debug_mode")
 parser.add_argument("sensor_mode", type=int)
 args = parser.parse_args()
 
-url_base = "http://www.golem.de/projekte/ot/temp.php?dbg=%s&token=b05467e6d5b11b4e0f998b9c708f1592&type=sbc&temp="
+url_base = ""
 
-sensor_path = "/sys/bus/w1/devices/28-000007722152/w1_slave"
+sensor_path = ""
 
 led_error_pin = 11
 led_success_pin = 10
@@ -41,13 +56,8 @@ def get_temp(path):
       match = re.match(r"([0-9a-f]{2} ){9}t=([+-]?[0-9]+)", line)
       if(match):
         temp = float(match.group(2))/1000
-
-        for x in xrange(0,2):
-          gpio.output(led_success_pin, gpio.HIGH)
-          time.sleep(1)
-          gpio.output(led_success_pin, gpio.LOW)
-          time.sleep(1)
-
+        flash_led(led_success_pin, 1.0)
+        
       else:
         error_str = "Temperature could not be read correctly!"
         log_errors(error_str)
@@ -101,7 +111,7 @@ def log_result(temp, mode, url):
   time_str = curr_date + curr_time
   log_str = "Log: "
   log_str += time_str + ": <debug_mode>" + repr(mode) + "<\debug_mode>"
-  log_str += "<token>b05467e6d5e11b4e0f998b9c708f1592b05467e6d5b11b4e0f998b9c708f1592<\\token>"
+  log_str += "<token><\\token>"
   log_str += "<type>sbc<\\type>"
   log_str += "\n"
 
